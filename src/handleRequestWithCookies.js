@@ -14,7 +14,7 @@ const { handleNoAuth } = require("./handleNoAuth");
  * @returns an HTTP response
  */
 exports.handleCookies = async (token, redirectUri, requestedUri, request) => {
-  console.log(`in handleCookies for redirectUri:${redirectUri} requestedUri:${requestedUri}`)
+  console.log(`in handleCookies for redirectUri:${redirectUri} requestedUri:${requestedUri} request.token:${request.token}`)
   const result = await validateToken(token);
 
   // If the JWT in the cookie is valid, just return the original request, which will load content from

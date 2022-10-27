@@ -77,6 +77,7 @@ exports.handleAuthorizationCodeRequest = async (code, state, cookies, host) => {
   let tokens;
   try {
     const { transcend_internal_pkce } = cookies;
+    logger.info(`exchangeCodeForToken code:${code} host:${host} transcend_internal_pkce:${transcend_internal_pkce}`);
     tokens = await exchangeCodeForToken(code, host, transcend_internal_pkce);
   } catch (err) {
     logger.error(err);
@@ -87,6 +88,7 @@ exports.handleAuthorizationCodeRequest = async (code, state, cookies, host) => {
 
   // TODO: Set the cookie on the top level domain
   const { requestedUri } = parseState(state);
+  logger.info(`redirect to requestedUri:${requestedUri}`);
   return redirect(requestedUri, {
     transcend_internal_id_token: tokens.id_token,
     transcend_internal_access_token: tokens.access_token,

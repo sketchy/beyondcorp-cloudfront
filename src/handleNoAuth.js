@@ -37,6 +37,9 @@ exports.handleNoAuth = async (redirectUri, requestedUri) => {
     code_challenge: pkceHash,
   });
 
+  logger.info(`nonce:${nonce} pkce:${pkce}`);
+  logger.info(`redirect_uri:${redirectUri + '/handleCode.html'} requestedUri:${requestedUri}`);
+
   return redirect(`${AUTH_DOMAIN}/login?${queryParams}`, {
     transcend_internal_nonce: encodeURIComponent(nonce),
     transcend_internal_pkce: encodeURIComponent(pkce),

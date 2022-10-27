@@ -3,6 +3,7 @@ const { reject } = require("./utils/response");
 const { parseCookies } = require("./utils/cookies");
 const { parseQueryString, getReferer } = require("./utils/urls");
 const util = require("util");
+const { logger } = require('./utils/logger');
 
 // handlers
 const { handleAuthorizationCodeRequest } = require("./handleAuthorizationCode");
@@ -55,34 +56,20 @@ exports.handler = async (event) => {
   const origin = `https://${headers.host[0].value}`;
   const querystring = request.querystring ? `?${request.querystring}` : "";
   const finalDestinationUri = `${origin}${request.uri}${querystring}`;
-  console.log(
+  logger.info(
     `################## Origin: ${origin} finalDestinationUri: ->${finalDestinationUri}<- referer: ${referer} ##############################`
   );
-
-  // try {
-  //   if (ImageRegex.test(finalDestinationUri)) {
-  //     console.log(
-  //       `################## Matched IMAGE REGEX for finalDestinationUri: ${finalDestinationUri} ##############################`
-  //     );
-  //     return request;
-  //   } else {
-  //     console.log(
-  //       `##### DID NOT MATCH IMAGE REGEX for finalDestinationUri: ${finalDestinationUri} ######`
-  //     );
-  //   }
-  // } catch (e) {
-  //   console.error({ e });
-  //   console.log(`ERROR:${e}`);
-  // }
 
   const cookies = parseCookies(headers);
 
   // Handle the case where the current page is a redirect from the
   // Cognito login page with a query param for the authorization code set
   const parsedQueryString = parseQueryString(request, finalDestinationUri);
+  logger.info(`parsedQueryString:${JSON.stringify(parsedQueryString)}`);
 
   if (parsedQueryString) {
     const { code, state } = parsedQueryString;
+    logger.info(`code:${code} state:${state} origin:${origin} before handleAuthorizationCodeRequest`);
     return handleAuthorizationCodeRequest(code, state, cookies, origin);
   }
 
