@@ -12,7 +12,7 @@ function reject(message) {
     statusDescription: 'Unauthorized',
     body: `
       If you just tried to login via Cognito try clicking <a href="/handleCode.html">here</a> to finish fixing Sketchy!
-      <p>Tired of Golum? Too bad!</p>
+      <p>Tired of Gollum? Too bad!</p>
       <img src="https://media.giphy.com/media/kKqD4MXwZggMg/giphy.gif" />
       <p>${message}</p>
     `,

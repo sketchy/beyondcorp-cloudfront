@@ -45,12 +45,14 @@ function parseQueryString(request, finalDestinationUri) {
  */
 function getReferer(headers) {
   const { referer } = headers;
+  console.log(`in getReferer with referer:${JSON.stringify(referer)}`);
 
   if (!referer || referer.length === 0) {
     return undefined;
   }
 
   const refererUrl = referer[0].value;
+  console.log(`refererUrl:${refererUrl}`);
 
   const { searchParams } = new URL(refererUrl);
 

@@ -3,12 +3,12 @@ const { reject } = require("./utils/response");
 const { parseCookies } = require("./utils/cookies");
 const { parseQueryString, getReferer } = require("./utils/urls");
 const util = require("util");
-const { logger } = require('./utils/logger');
 
 // handlers
 const { handleAuthorizationCodeRequest } = require("./handleAuthorizationCode");
 const { handleCookies } = require("./handleRequestWithCookies");
 const { handleNoAuth } = require("./handleNoAuth");
+const finalDestHandleCodeRegex = /handleCode/;
 const ImageRegex =
   /(https:\/\/)([^\s(["<,>/]*)(\/)[^\s[",><]*(.png|.jpg|.jpeg|.gif|.png|.svg|.ttf|.woff|.woff2|.ico)(\?[^\s[",><]*)?/i;
 // const ImageRegex = new RegExp(
@@ -55,21 +55,25 @@ exports.handler = async (event) => {
   // Parse the final destination the user wants to go to
   const origin = `https://${headers.host[0].value}`;
   const querystring = request.querystring ? `?${request.querystring}` : "";
-  const finalDestinationUri = `${origin}${request.uri}${querystring}`;
-  logger.info(
+  let finalDestinationUri = `${origin}${request.uri}${querystring}`;
+  console.log(
     `################## Origin: ${origin} finalDestinationUri: ->${finalDestinationUri}<- referer: ${referer} ##############################`
   );
+  if(finalDestHandleCodeRegex.test(finalDestinationUri)){
+    finalDestinationUri = finalDestinationUri.split('?')[0];
+  }
+
 
   const cookies = parseCookies(headers);
 
   // Handle the case where the current page is a redirect from the
   // Cognito login page with a query param for the authorization code set
   const parsedQueryString = parseQueryString(request, finalDestinationUri);
-  logger.info(`parsedQueryString:${JSON.stringify(parsedQueryString)}`);
+  console.log(`parsedQueryString:${JSON.stringify(parsedQueryString)}`);
 
   if (parsedQueryString) {
     const { code, state } = parsedQueryString;
-    logger.info(`code:${code} state:${state} origin:${origin} before handleAuthorizationCodeRequest`);
+    console.log(`code:${code} state:${state} origin:${origin} before handleAuthorizationCodeRequest`);
     return handleAuthorizationCodeRequest(code, state, cookies, origin);
   }
 
