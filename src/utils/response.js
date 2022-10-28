@@ -11,15 +11,10 @@ function reject(message) {
     status: '401',
     statusDescription: 'Unauthorized',
     body: `
-      <script>
-      function removeExtraParams(url) {
-        window.history.replaceState({}, document.title, "/handleCode.html");
-      }
-      </script>
-      If you just tried to login via Cognito try clicking <a href="/handleCode.html" onclick="removeExtraParams()">here</a> to finish fixing Sketchy!
+      If you just tried to login via Cognito try clicking <a href=".">here</a> to finish fixing Sketchy!
       <p>Hopefully you only have to see Gollum once!</p>
       <img src="https://media.giphy.com/media/kKqD4MXwZggMg/giphy.gif" />
-      <p>${message}</p>
+      <p style="color:blue;font-size:46px;">${message}</p>
     `,
     bodyEncoding: 'text',
     headers: {
