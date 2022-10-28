@@ -8,6 +8,7 @@ const util = require("util");
 const { handleAuthorizationCodeRequest } = require("./handleAuthorizationCode");
 const { handleCookies } = require("./handleRequestWithCookies");
 const { handleNoAuth } = require("./handleNoAuth");
+const finalDestHandleCodeRegex = /handleCode/;
 const ImageRegex =
   /(https:\/\/)([^\s(["<,>/]*)(\/)[^\s[",><]*(.png|.jpg|.jpeg|.gif|.png|.svg|.ttf|.woff|.woff2|.ico)(\?[^\s[",><]*)?/i;
 // const ImageRegex = new RegExp(
@@ -54,35 +55,25 @@ exports.handler = async (event) => {
   // Parse the final destination the user wants to go to
   const origin = `https://${headers.host[0].value}`;
   const querystring = request.querystring ? `?${request.querystring}` : "";
-  const finalDestinationUri = `${origin}${request.uri}${querystring}`;
+  let finalDestinationUri = `${origin}${request.uri}${querystring}`;
   console.log(
     `################## Origin: ${origin} finalDestinationUri: ->${finalDestinationUri}<- referer: ${referer} ##############################`
   );
+  if(finalDestHandleCodeRegex.test(finalDestinationUri)){
+    finalDestinationUri = finalDestinationUri.split('?')[0];
+  }
 
-  // try {
-  //   if (ImageRegex.test(finalDestinationUri)) {
-  //     console.log(
-  //       `################## Matched IMAGE REGEX for finalDestinationUri: ${finalDestinationUri} ##############################`
-  //     );
-  //     return request;
-  //   } else {
-  //     console.log(
-  //       `##### DID NOT MATCH IMAGE REGEX for finalDestinationUri: ${finalDestinationUri} ######`
-  //     );
-  //   }
-  // } catch (e) {
-  //   console.error({ e });
-  //   console.log(`ERROR:${e}`);
-  // }
 
   const cookies = parseCookies(headers);
 
   // Handle the case where the current page is a redirect from the
   // Cognito login page with a query param for the authorization code set
   const parsedQueryString = parseQueryString(request, finalDestinationUri);
+  console.log(`parsedQueryString:${JSON.stringify(parsedQueryString)}`);
 
   if (parsedQueryString) {
     const { code, state } = parsedQueryString;
+    console.log(`code:${code} state:${state} origin:${origin} before handleAuthorizationCodeRequest`);
     return handleAuthorizationCodeRequest(code, state, cookies, origin);
   }
 
