@@ -9,8 +9,6 @@ module "lambda-at-edge" {
 
   s3_artifact_bucket = var.s3_artifact_bucket
 
-  runtime = "nodejs16.x"
-
   lambda_code_source_dir = "${path.module}/../src"
   file_globs = [
     "index.js",
